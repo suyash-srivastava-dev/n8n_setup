@@ -1,0 +1,54 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: n8n-postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=n8n
+      - POSTGRES_PASSWORD=n8npassword
+      - POSTGRES_DB=n8n
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=n8n
+      - DB_POSTGRESDB_USER=n8n
+      - DB_POSTGRESDB_PASSWORD=n8npassword
+
+      # Base URLs and domain config
+      - N8N_HOST=n8nssd.centralindia.cloudapp.azure.com
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - WEBHOOK_URL=https://n8nssd.centralindia.cloudapp.azure.com/
+      - N8N_EDITOR_BASE_URL=https://n8nssd.centralindia.cloudapp.azure.com/
+      - NODE_ENV=production
+
+    volumes:
+      - ./n8n_data:/home/node/.n8n
+    expose:
+      - "5678"
+
+  nginx:
+    image: nginx:latest
+    container_name: n8n-nginx
+    restart: always
+    depends_on:
+      - n8n
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - /etc/letsencrypt:/etc/letsencrypt
+      - ./nginx/logs:/var/log/nginx
