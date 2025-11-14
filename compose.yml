@@ -38,6 +38,7 @@ services:
       - ./n8n_data:/home/node/.n8n
     expose:
       - "5678"
+    user: "0" 
 
   nginx:
     image: nginx:latest
