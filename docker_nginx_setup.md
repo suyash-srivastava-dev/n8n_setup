@@ -73,7 +73,7 @@ services:
 
 Create file:
 nginx/conf.d/n8n.conf
-
+```
 server {
     listen 80;
     server_name automation.example.com;
@@ -107,14 +107,15 @@ server {
     access_log /var/log/nginx/n8n.access.log;
     error_log /var/log/nginx/n8n.error.log;
 }
-
+```
 🔒 3. Get SSL Certificates
 
 Use Certbot on the host (not in Docker):
 
+```
 sudo apt install certbot -y
 sudo certbot certonly --standalone -d automation.example.com
-
+```
 
 Certificates will be saved to /etc/letsencrypt/live/automation.example.com/.
 
